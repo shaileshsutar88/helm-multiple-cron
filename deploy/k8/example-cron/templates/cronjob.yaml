@@ -1,0 +1,42 @@
+{{- range $job, $val := .Values.cronjob.crons }}
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  namespace: {{ $.Values.cronjob.metadata.namespace }}
+spec:
+  concurrencyPolicy: Allow
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    metadata:
+      creationTimestamp: {{ $.Values.cronjob.metadata.creationTimestamp }}
+      name: {{ $.Values.cronjob.crons.name }}
+    spec:
+      template:
+        metadata:
+          creationTimestamp: {{ $.Values.cronjob.metadata.creationTimestamp }}
+        spec:
+          containers:
+          - image: {{ $.Values.cronjob.image.repository }}
+            imagePullPolicy: {{ $.Values.cronjob.image.pullPolicy }}
+            name: {{ $.Values.cronjob.crons.name }}
+            resources:
+              requests:
+                memory: {{ $.Values.cronjob.resources.requests.memory }}
+                cpu: {{ $.Values.cronjob.resources.requests.cpu }}
+              limits:
+                memory: {{ $.Values.cronjob.resources.limits.memory }}
+                cpu: {{ $.Values.cronjob.resources.limits.cpu }}
+
+          dnsPolicy: ClusterFirst
+          restartPolicy: {{ $.Values.cronjob.image.restartPolicy }}
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+          imagePullSecrets:
+            - name: {{ $.Values.cronjob.image.imagePullSecrets }}
+  schedule: {{ quote $.Values.cronjob.crons.schedule }}
+  successfulJobsHistoryLimit: 3
+  suspend: false
+status: {}
+---
+{{- end }}

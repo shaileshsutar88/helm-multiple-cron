@@ -1,0 +1,27 @@
+cronjob:
+  crons:
+    "0":
+    name: one-minute-cron
+    schedule: "*/1 * * * *"
+    "1":
+    name: five-minute-cron
+    schedule: "*/5 * * * *"
+
+  metadata:
+    namespace: "{{K8S_NS}}"
+
+  restartPolicy: OnFailure
+
+  image:
+    repository: "{{CI_REGISTRY_IMAGE}}/{{CI_COMMIT_REF_SLUG}}:{{CI_COMMIT_SHA}}.{{CI_PIPELINE_IID}}"
+    pullPolicy: "Always"
+    imagePullSecrets: git-image-pull-secret-cron
+    restartPolicy: OnFailure
+
+  resources:
+    requests:
+      cpu: 1.0
+      memory: "128Mi"
+    limits:
+      cpu: 2.0
+      memory: "192Mi"
