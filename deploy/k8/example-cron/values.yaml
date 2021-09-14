@@ -9,6 +9,7 @@ cronjob:
 
   metadata:
     namespace: "{{K8S_NS}}"
+    creationTimestamp: null
 
   restartPolicy: OnFailure
 
